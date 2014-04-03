@@ -26,6 +26,7 @@ by running:
 """
 
 import argparse
+from datetime import datetime
 import httplib2
 import os
 import sys
@@ -80,6 +81,10 @@ def main(argv):
     # Construct the service object for the interacting with the Calendar API.
     service = discovery.build('calendar', 'v3', http=http)
 
+    # Get the date to search from
+    date_input = raw_input("Enter a date to search from. If none provided, all events will be processed. EX: 01/22/2014: ").split('/')
+    date = datetime(int(date_input[2]), int(date_input[0]), int(date_input[1])).isoformat()+'z' if date_input != [''] else None
+
     try:
         master_email_set = set()
         # Read in master email list and create a set
@@ -109,7 +114,7 @@ def main(argv):
             page_token = None
             # Read all events per calendar
             while True:
-                events = service.events().list(calendarId=calendar['id'], pageToken=page_token).execute()
+                events = service.events().list(calendarId=calendar['id'], pageToken=page_token, timeMin=date).execute()
                 for event in events['items']:
                     num_events += 1
                     # Add email:name pairs to the email dict and emails to the set
@@ -130,8 +135,9 @@ def main(argv):
         # Write new contacts to a CSV
         with open('new_contacts.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
-            for contact in new_contacts:
-                writer.writerow([contact[0], contact[1]])
+            try:
+                for contact in new_contacts:
+                    writer.writerow([unicode(contact[0]).encode("utf-8"), unicode(contact[1]).encode("utf-8")]) # Encoding protection against weird characters and None
 
     except IOError:
         print "Make sure you have a master emails list named 'master_list.csv' in the same directory"

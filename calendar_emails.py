@@ -135,9 +135,8 @@ def main(argv):
         # Write new contacts to a CSV
         with open('new_contacts.csv', 'wb') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
-            try:
-                for contact in new_contacts:
-                    writer.writerow([unicode(contact[0]).encode("utf-8"), unicode(contact[1]).encode("utf-8")]) # Encoding protection against weird characters and None
+            for contact in new_contacts:
+                writer.writerow([unicode(contact[0]).encode("utf-8"), unicode(contact[1]).encode("utf-8")]) # Encoding protection against weird characters and None
 
     except IOError:
         print "Make sure you have a master emails list named 'master_list.csv' in the same directory"

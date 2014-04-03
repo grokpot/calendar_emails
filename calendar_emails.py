@@ -23,6 +23,8 @@ by running:
 
   $ python calendar_emails.py --help
 
+version: 4
+
 """
 
 import argparse

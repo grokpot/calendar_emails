@@ -23,7 +23,7 @@ by running:
 
   $ python calendar_emails.py --help
 
-version: 4
+version: 4.1
 
 """
 
@@ -132,7 +132,6 @@ def main(argv):
         for email in email_difference:  # Need to get the email:name pairs for new contacts
             new_contacts.append([attendees[email], email])
         print "%s new contacts recovered" % len(new_contacts)
-        print new_contacts
 
         # Write new contacts to a CSV
         with open('new_contacts.csv', 'wb') as csvfile:

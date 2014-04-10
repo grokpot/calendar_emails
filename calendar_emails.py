@@ -23,7 +23,7 @@ by running:
 
   $ python calendar_emails.py --help
 
-version: 4.1
+version: 5.0
 
 """
 
@@ -105,6 +105,16 @@ def main(argv):
         except IOError:
             pass
 
+        domains_to_exclude = []
+        try:
+            # Read in domains to exclude - helps narrow down your result set
+            with open('domains_to_exclude.csv', 'rU') as csvfile:
+                reader = csv.reader(csvfile, delimiter=',')
+                for row in reader:
+                   domains_to_exclude.append(row[0])
+        except IOError:
+            pass
+
         attendees = {} # Create a dict which contains email:name pairs
         new_email_set = set() # Create a new email set, for set difference against master list
         num_events = 0
@@ -121,8 +131,10 @@ def main(argv):
                     num_events += 1
                     # Add email:name pairs to the email dict and emails to the set
                     for attendee in event.get('attendees', []):
-                        attendees[attendee.get('email')] = attendee.get('displayName')
-                        new_email_set.add(attendee.get('email'))
+                        email = attendee.get('email')
+                        if not any(domain in email for domain in domains_to_exclude):    # If the domain is not to be excluded, add it to our result set
+                            attendees[email] = attendee.get('displayName')
+                            new_email_set.add(attendee.get('email'))
                     page_token = events.get('nextPageToken')
                 if not page_token:
                     break

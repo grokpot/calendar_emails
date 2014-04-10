@@ -23,7 +23,7 @@ by running:
 
   $ python calendar_emails.py --help
 
-version: 5.0
+version: 5.1
 
 """
 
@@ -134,7 +134,7 @@ def main(argv):
                         email = attendee.get('email')
                         if not any(domain in email for domain in domains_to_exclude):    # If the domain is not to be excluded, add it to our result set
                             attendees[email] = attendee.get('displayName')
-                            new_email_set.add(attendee.get('email'))
+                            new_email_set.add(email)
                     page_token = events.get('nextPageToken')
                 if not page_token:
                     break
